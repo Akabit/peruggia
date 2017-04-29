@@ -105,12 +105,19 @@ function generateRandomString($length = 10) {
 }
 
 $populate = false;
+$i=0;
 $handle = fopen("users.txt", "r");
 if ($handle) {
 	while (($line = fgets($handle)) !== false) {
-		$pass = generateRandomString(16);
+    if ($i==0) {
+      $pass = 'password';
+    }
+    else {
+      $pass = generateRandomString(16);
+    }
 		$line = rtrim($line);
 		mysqli_query($conx, "INSERT INTO users (username, password) VALUES ('$line', '$pass')");
+    $i++;
 	}
 	fclose($handle);
 	$populate = true;
