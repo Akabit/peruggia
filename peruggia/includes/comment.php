@@ -21,9 +21,9 @@ if(isset($_GET['del_id'])){
 
   if(isset($_SESSION['admin']) && ($_SESSION['admin']==1)){
     if($guard_sqli){
-	  mysql_query("UPDATE picdata SET comments = '' WHERE ID LIKE ".(int)$_GET['del_id'], $conx);
+	  mysqli_query($conx, "UPDATE picdata SET comments = '' WHERE ID LIKE ".(int)$_GET['del_id']);
 	}else{
-      mysql_query("UPDATE picdata SET comments = '' WHERE ID LIKE ".$_GET['del_id'], $conx);
+      mysqli_query($conx, "UPDATE picdata SET comments = '' WHERE ID LIKE ".$_GET['del_id']);
 	}
     header("Location: ".$peruggia_root);
   }else{
@@ -40,22 +40,22 @@ if(isset($_GET['postcomment'])){
     $comment = $_POST['comment']."<br><br>";
   }
   if($guard_sqli){
-    $comment = mysql_real_escape_string($comment);
+    $comment = mysqli_real_escape_string($conx, $comment);
   }
   if($guard_sqli){
-    $crntquery = mysql_query("SELECT comments FROM picdata WHERE ID LIKE ".(int)$_GET['pic_id'], $conx);
+    $crntquery = mysqli_query($conx, "SELECT comments FROM picdata WHERE ID LIKE ".(int)$_GET['pic_id']);
   }else{
-    $crntquery = mysql_query("SELECT comments FROM picdata WHERE ID LIKE ".$_GET['pic_id'], $conx);
+    $crntquery = mysqli_query($conx, "SELECT comments FROM picdata WHERE ID LIKE ".$_GET['pic_id']);
   }
-  $crntcomm = mysql_fetch_array($crntquery);
+  $crntcomm = mysqli_fetch_array($crntquery);
   $save = $crntcomm['comments'].$comment;
   if($guard_sqli){
-    mysql_query("UPDATE picdata SET comments = '".$save."' WHERE ID LIKE ".(int)$_GET['pic_id'], $conx);
+    mysqli_query($conx, "UPDATE picdata SET comments = '".$save."' WHERE ID LIKE ".(int)$_GET['pic_id']);
   }else{
-    mysql_query("UPDATE picdata SET comments = '".$save."' WHERE ID LIKE ".$_GET['pic_id'], $conx);
+    mysqli_query($conx, "UPDATE picdata SET comments = '".$save."' WHERE ID LIKE ".$_GET['pic_id']);
   }
   header("Location: ".$peruggia_root);
-  
+
 }else{
 
 ?>
@@ -67,17 +67,17 @@ if(isset($_GET['postcomment'])){
 <?php
 
 if($guard_sqli){
-  $picquery = mysql_query("SELECT * FROM picdata WHERE ID = ".(int)$_GET['pic_id'], $conx);
+  $picquery = mysqli_query($conx, "SELECT * FROM picdata WHERE ID = ".(int)$_GET['pic_id']);
 }else{
-  $picquery = mysql_query("SELECT * FROM picdata WHERE ID = ".$_GET['pic_id'], $conx);
+  $picquery = mysqli_query($conx, "SELECT * FROM picdata WHERE ID = ".$_GET['pic_id']);
 }
-$data = mysql_fetch_array($picquery);
+$data = mysqli_fetch_array($picquery);
 
 echo "<img src=images/".$data['pic']." border=1><br><br><b>Uploaded By: ".$data['uploader']."</b><br>";
 
 ?>
 <br>
-<form action=<?php 
+<form action=<?php
 if($guard_refl_xss){
   echo $peruggia_root."?action=comment&pic_id=".htmlentities($_GET['pic_id'])."&postcomment=1";
 }else{

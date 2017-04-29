@@ -36,48 +36,48 @@
 
 include("conf.php");
 
-$conx = mysql_connect($mysql_host, $mysql_user, $mysql_pass);
+$conx = mysqli_connect($mysql_host, $mysql_user, $mysql_pass, $mysql_db);
 
 if(!$conx){
   echo "<font color=red>[-] Connect to MySQL</font><br>";
-  echo mysql_error();
+  echo mysqli_error($conx);
   $error = 1;
 }else{
   echo "<font color=green>[+] Connect to MySQL</font><br>";
 }
 
-if(!mysql_select_db($mysql_db, $conx)){
-  if(!mysql_query("CREATE DATABASE $mysql_db")){
+if(!mysqli_select_db($conx, $mysql_db)){
+  if(!mysqli_query($conx, "CREATE DATABASE $mysql_db")){
     echo "<font color=red>[-] Create database</font><br>";
-    echo mysql_error();
+    echo mysqli_error();
     $error = 1;
   }else{
     echo "<font color=green>[+] Create database</font><br>";
-    mysql_select_db($mysql_db, $conx);
+    mysqli_select_db($conx, $mysql_db);
   }
 }else{
   echo "<font color=green>[+] Create database (exists)</font><br>";
-  mysql_select_db($mysql_db, $conx);
+  mysqli_select_db($conx, $mysql_db);
 }
 
-$create_table_users = mysql_query("
+$create_table_users = mysqli_query($conx, "
 CREATE TABLE users (
-ID MEDIUMINT NOT NULL AUTO_INCREMENT PRIMARY KEY, 
-username VARCHAR(60), 
+ID MEDIUMINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+username VARCHAR(60),
 password VARCHAR(60)
-) 
-", $conx);
+)
+");
 
-$create_table_picdata = mysql_query("
+$create_table_picdata = mysqli_query($conx, "
 CREATE TABLE picdata (
-ID MEDIUMINT NOT NULL AUTO_INCREMENT PRIMARY KEY, 
-pic VARCHAR(60), 
-comments VARCHAR(1000), 
+ID MEDIUMINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+pic VARCHAR(60),
+comments VARCHAR(1000),
 uploader VARCHAR(1000)
-) 
-", $conx);
+)
+");
 
-if(!mysql_num_rows(mysql_query("SHOW TABLES LIKE 'users'"))){
+if(!mysqli_num_rows(mysqli_query($conx, "SHOW TABLES LIKE 'users'"))){
   if(!($create_table_users) || !($create_table_picdata)){
     echo "<font color=red>[-] Create table</font><br>";
     echo mysql_error();
@@ -105,7 +105,7 @@ if ($handle) {
 	while (($line = fgets($handle)) !== false) {
 		$pass = generateRandomString(16);
 		$line = rtrim($line);
-		mysql_query("INSERT INTO users (username, password) VALUES ('$line', '$pass')", $conx);
+		mysqli_query($conx, "INSERT INTO users (username, password) VALUES ('$line', '$pass')");
 	}
 	fclose($handle);
 	$populate = true;
@@ -113,17 +113,17 @@ if ($handle) {
 
 if(!$populate) {
 	echo "<font color=red>[-] Populate users</font><br>";
-	echo mysql_error();
+	echo mysqli_error();
 	$error = 1;
 } else {
 	echo "<font color=green>[+] Populate users</font><br>";
 }
 
 
-$populate = mysql_query("
+$populate = mysqli_query($conx, "
 INSERT INTO picdata (pic,uploader)
 VALUES ('lolhax.jpg', 'Peruggia')
-", $conx);
+");
 
 if(!$populate){
   echo "<font color=red>[-] Populate gallery</font><br>";

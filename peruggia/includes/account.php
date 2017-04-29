@@ -28,7 +28,7 @@ if(isset($_GET['changepass'])){
   }else{
     $oldpass = $_SESSION['password'];
     $newpass = $_POST['newpass'];
-    mysql_query("UPDATE users SET password='".$newpass."' WHERE password='".$oldpass."'", $conx);
+    mysqli_query($conx, "UPDATE users SET password='".$newpass."' WHERE password='".$oldpass."'");
     session_destroy();
     header("Location: ".$peruggia_root."?action=account");
   }
@@ -36,14 +36,14 @@ if(isset($_GET['changepass'])){
 }elseif(isset($_GET['adduser'])){
 
   if($guard_sqli){
-    $newuser = mysql_real_escape_string($_POST['newuser']);
-    $newuserpass = mysql_real_escape_string($_POST['newuserpass']);
+    $newuser = mysqli_real_escape_string($conx, $_POST['newuser']);
+    $newuserpass = mysqli_real_escape_string($conx, $_POST['newuserpass']);
   }else{
     $newuser = $_POST['newuser'];
     $newuserpass = $_POST['newuserpass'];
   }
 
-  mysql_query("INSERT INTO users (username,password) VALUES ('".$newuser."','".$newuserpass."')", $conx);
+  mysqli_query($conx, "INSERT INTO users (username,password) VALUES ('".$newuser."','".$newuserpass."')");
 
   header("Location: ".$peruggia_root."?action=account");
 
@@ -53,9 +53,9 @@ if(isset($_GET['changepass'])){
     header("Location: ".$peruggia_root."?action=account");
   }else{
     if($guard_sqli){
-      mysql_query("DELETE FROM users WHERE username='".mysql_real_escape_string($_GET['deleteuser'])."'", $conx);
+      mysqli_query($conx, "DELETE FROM users WHERE username='".mysqli_real_escape_string($conx, $_GET['deleteuser'])."'");
     }else{
-      mysql_query("DELETE FROM users WHERE username='".$_GET['deleteuser']."'", $conx);
+      mysqli_query($conx, "DELETE FROM users WHERE username='".$_GET['deleteuser']."'");
     }
     header("Location: ".$peruggia_root."?action=account");
   }
@@ -84,17 +84,17 @@ if(isset($_GET['changepass'])){
   Username: <input type=text name=newuser><br>
   Password: <input type=text name=newuserpass><br>
   <br><div align=center><input type=submit value=Add></div>
-  </form>  
+  </form>
   </fieldset><br>
   <fieldset style=width:300;>
   <legend><b>Delete User</b></legend>
   <table cellpadding=2 cellspacing=2 width=100%>
   <?php
 
-$users = mysql_query("SELECT username FROM users", $conx);
+$users = mysqli_query($conx, "SELECT username FROM users");
 
 $c = 0;
-while($user = mysql_fetch_array($users)){
+while($user = mysqli_fetch_array($users)){
 
   echo "<tr>";
   if(($c % 2) == 0){
@@ -117,7 +117,7 @@ while($user = mysql_fetch_array($users)){
     echo "<strike>[delete]</strike>&nbsp;";
   }else{
     echo "<a href=".$peruggia_root."?action=account&deleteuser=".$user['username'].">[delete]</a>&nbsp;";
-  }  
+  }
   echo "</td>";
   echo "</tr>";
   $c++;

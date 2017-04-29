@@ -23,13 +23,13 @@ if(!isset($_SESSION['admin'])){
 
 if(isset($_GET['pic_id'])){
   if($guard_sqli){
-    $filequery = mysql_query("SELECT pic FROM picdata WHERE ID LIKE ".(int)$_GET['pic_id'], $conx);
+    $filequery = mysqli_query($conx, "SELECT pic FROM picdata WHERE ID LIKE ".(int)$_GET['pic_id']);
   }else{
-    $filequery = mysql_query("SELECT pic FROM picdata WHERE ID LIKE ".$_GET['pic_id'], $conx);
+    $filequery = mysqli_query($conx, "SELECT pic FROM picdata WHERE ID LIKE ".$_GET['pic_id']);
   }
-  $delfile = mysql_fetch_array($filequery);
+  $delfile = mysqli_fetch_array($filequery);
   unlink("images/".$delfile['pic']);
-  mysql_query("DELETE FROM picdata WHERE pic LIKE '".$delfile['pic']."'", $conx);
+  mysqli_query($conx, "DELETE FROM picdata WHERE pic LIKE '".$delfile['pic']."'");
   echo "<div align=center><h5>Picture Deleted</h5></div><br>";
 }
 
@@ -40,8 +40,8 @@ if(isset($_GET['upload'])){
     $file = $_FILES['upfile']['name'];
   }
   if($guard_sqli){
-    $path = "images/".mysql_real_escape_string(basename($file));
-    $uploader = mysql_real_escape_string($_SESSION['username']);
+    $path = "images/".mysqli_real_escape_string(basename($conx, $file));
+    $uploader = mysqli_real_escape_string($conx, $_SESSION['username']);
   }else{
     $path = "images/".basename($file);
     $uploader = $_SESSION['username'];
@@ -55,7 +55,7 @@ if(isset($_GET['upload'])){
     $path = htmlentities($path);
   }
   move_uploaded_file($_FILES['upfile']['tmp_name'], $path);
-  mysql_query("INSERT INTO picdata (pic,uploader) VALUES ('".$file."', '".$uploader."')", $conx);
+  mysqli_query($conx, "INSERT INTO picdata (pic,uploader) VALUES ('".$file."', '".$uploader."')");
   if($guard_pers_xss){
     echo "<div align=center><h5>Picture \"".htmlentities(basename($file))."\" Uploaded</h5></div><br>";
   }else{
@@ -87,8 +87,8 @@ Choose a file to upload:<br>
 <legend><b>Delete</b></legend>
 <?php
 foreach($images as $pic){
-$delquery = mysql_query("SELECT ID FROM picdata WHERE pic LIKE '".$pic."'", $conx);
-$data = mysql_fetch_array($delquery);
+$delquery = mysqli_query($conx, "SELECT ID FROM picdata WHERE pic LIKE '".$pic."'");
+$data = mysqli_fetch_array($delquery);
 ?>
 <a href=<?php echo "images/".$pic; ?>><img src="images/<?php echo $pic; ?>" border=1></a><br>
 <a href=<?php echo $peruggia_root."?action=updel&pic_id=".$data['ID']; ?>><b>Delete this picture</b></a>

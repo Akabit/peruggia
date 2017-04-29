@@ -27,7 +27,7 @@ $mysql_db = 		"images";
 $title = 		"Gallery";
 $version = 		"1.2";
 $peruggia_root = 	"http://inception.local/";
-error_reporting(0);	// You may or may not want to see these, your choice
+//error_reporting(0);	// You may or may not want to see these, your choice
 
 //Vulnerabilities (true or false)
 //NOTE: disabling some vulnerabilities may render others useless
