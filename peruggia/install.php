@@ -37,6 +37,11 @@
 include("conf.php");
 
 $conx = mysqli_connect($mysql_host, $mysql_user, $mysql_pass, $mysql_db);
+/* check connection */
+if (mysqli_connect_errno()) {
+    printf("Connect failed: %s\n", mysqli_connect_error());
+    exit();
+}
 
 if(!$conx){
   echo "<font color=red>[-] Connect to MySQL</font><br>";
@@ -49,7 +54,7 @@ if(!$conx){
 if(!mysqli_select_db($conx, $mysql_db)){
   if(!mysqli_query($conx, "CREATE DATABASE $mysql_db")){
     echo "<font color=red>[-] Create database</font><br>";
-    echo mysqli_error();
+    echo mysqli_error($conx);
     $error = 1;
   }else{
     echo "<font color=green>[+] Create database</font><br>";
@@ -80,7 +85,7 @@ uploader VARCHAR(1000)
 if(!mysqli_num_rows(mysqli_query($conx, "SHOW TABLES LIKE 'users'"))){
   if(!($create_table_users) || !($create_table_picdata)){
     echo "<font color=red>[-] Create table</font><br>";
-    echo mysql_error();
+    echo mysqli_error($conx);
     $error = 1;
   }else{
     echo "<font color=green>[+] Create table</font><br>";
@@ -113,7 +118,7 @@ if ($handle) {
 
 if(!$populate) {
 	echo "<font color=red>[-] Populate users</font><br>";
-	echo mysqli_error();
+	echo mysqli_error($conx);
 	$error = 1;
 } else {
 	echo "<font color=green>[+] Populate users</font><br>";
@@ -127,7 +132,7 @@ VALUES ('lolhax.jpg', 'Peruggia')
 
 if(!$populate){
   echo "<font color=red>[-] Populate gallery</font><br>";
-  echo mysql_error();
+  echo mysqli_error($conx);
   $error = 1;
 }else{
   echo "<font color=green>[+] Populate gallery</font><br>";
@@ -135,12 +140,12 @@ if(!$populate){
 
 if(isset($error)){
   echo "<font color=red>Error!</font><br>";
-  echo mysql_error();
+  echo mysqli_error($conx);
 }else{
   echo "<font color=green>Success!</font><br>";
 }
 
-mysql_close($conx);
+mysqli_close($conx);
 
 echo "<br><a href=index.php><b>Main Page</b></a><br>";
 echo "<a href=index.php?action=login><b>Log in</b></a>";
